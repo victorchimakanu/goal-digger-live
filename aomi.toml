@@ -1,7 +1,7 @@
 [app]
 name         = "goal-digger"
 display_name = "Goal Digger — World Cup Trading Brain"
-platform     = "somm.finance"
+platform     = "community"
 git          = "https://github.com/CeciliaZ030/goal-digger-agent"
 public       = true
 server_tags  = ["staging"]
