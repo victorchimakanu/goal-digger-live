@@ -4,10 +4,12 @@
 //!   - Team strength (Elo + xG) is slow-moving: bundled from `data/teams.json`,
 //!     produced daily by the Python prep step (soccerdata -> FBref + Elo).
 //!   - Match state (fixtures, injuries, lineups) is live: API-FOOTBALL at runtime,
-//!     gated on the API_FOOTBALL_KEY env var.
+//!     gated on the API_FOOTBALL_KEY secret (host vault when deployed, env var
+//!     locally). Primed once per tool call via `prime_secret`.
 //!   - Market prices: Polymarket Gamma API, public, no key.
 
 use crate::sim::TeamStrength;
+use aomi_sdk::{resolve_secret_value, DynToolCallCtx};
 use serde::Deserialize;
 use serde_json::{json, Value};
 use std::collections::HashMap;
@@ -70,7 +72,25 @@ pub fn all_team_names() -> Vec<String> {
 
 // ─── API-FOOTBALL (live, key-gated) ──────────────────────────────────────────
 
+/// API-FOOTBALL key, resolved from the host secret vault (deployed) or the env
+/// var (local dev) and cached for the lifetime of the process.
+static API_KEY: LazyLock<std::sync::Mutex<Option<String>>> =
+    LazyLock::new(|| std::sync::Mutex::new(None));
+
+/// Prime the API-FOOTBALL key from the per-app secret vault at tool-call time.
+/// Call at the top of any tool that reads live data. A no-op when the secret is
+/// absent (sims still run on bundled strength). The SDK resolver falls back to
+/// the `API_FOOTBALL_KEY` env var for local runs where no vault is in scope.
+pub fn prime_secret(ctx: &DynToolCallCtx) {
+    if let Ok(k) = resolve_secret_value(ctx, None, "API_FOOTBALL_KEY", "missing") {
+        *API_KEY.lock().unwrap() = Some(k);
+    }
+}
+
 fn api_football_key() -> Result<String, String> {
+    if let Some(k) = API_KEY.lock().unwrap().clone() {
+        return Ok(k);
+    }
     std::env::var("API_FOOTBALL_KEY").map_err(|_| {
         "[goal-digger] API_FOOTBALL_KEY not set. Live fixtures/injuries unavailable; \
          strength-only simulation still works."

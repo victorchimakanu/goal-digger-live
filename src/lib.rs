@@ -42,6 +42,14 @@ Calm and concrete. No hype. Give the number, the reason, the stake. When a bet i
 fair or overpriced, say so plainly rather than forcing a trade. Probabilities are
 estimates, not certainties; never promise a win."#;
 
+/// Live match data (fixtures, lineups, scores) from API-FOOTBALL. Optional: the
+/// simulator runs on bundled team strength without it, so the app still loads.
+const API_FOOTBALL_KEY: Secret = Secret::new(
+    "API_FOOTBALL_KEY",
+    "API-FOOTBALL key (v3.football.api-sports.io) for live 2026 World Cup fixtures, lineups, and scores. Optional: matches still simulate on bundled strength data if it is not set.",
+    false,
+);
+
 dyn_aomi_app!(
     app = tool::GoalDiggerApp,
     name = "goal-digger",
@@ -55,5 +63,6 @@ dyn_aomi_app!(
         tool::GetWcFixtures,
         tool::WatchMatch,
     ],
+    secrets = [API_FOOTBALL_KEY],
     namespaces = ["evm-core"]
 );

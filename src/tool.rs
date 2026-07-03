@@ -227,7 +227,8 @@ impl DynAomiTool for GetTeamDossier {
         "Get a team's modelling inputs: Elo rating and expected goals for/against (bundled). \
          If a team_id and API_FOOTBALL_KEY are present, also pulls the live injury list.";
 
-    fn run(_app: &GoalDiggerApp, args: Self::Args, _ctx: DynToolCallCtx) -> Result<Value, String> {
+    fn run(_app: &GoalDiggerApp, args: Self::Args, ctx: DynToolCallCtx) -> Result<Value, String> {
+        data::prime_secret(&ctx);
         let s = data::team_strength(&args.team)?;
         let mut out = json!({
             "source": "goal-digger",
@@ -266,7 +267,8 @@ impl DynAomiTool for GetWcFixtures {
         "Get 2026 World Cup fixtures and live scores from API-FOOTBALL (needs API_FOOTBALL_KEY). \
          Optionally filter by date.";
 
-    fn run(_app: &GoalDiggerApp, args: Self::Args, _ctx: DynToolCallCtx) -> Result<Value, String> {
+    fn run(_app: &GoalDiggerApp, args: Self::Args, ctx: DynToolCallCtx) -> Result<Value, String> {
+        data::prime_secret(&ctx);
         let data = data::fixtures(args.date)?;
         Ok(json!({ "source": "goal-digger", "fixtures": data }))
     }
