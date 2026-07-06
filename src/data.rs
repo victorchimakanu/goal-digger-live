@@ -87,15 +87,19 @@ pub fn prime_secret(ctx: &DynToolCallCtx) {
     }
 }
 
+/// Shipped API-FOOTBALL key so every user of the deployed app gets live data
+/// without setting a secret. Ultra plan, 75k/day. Intentionally public: it is a
+/// read-only sports data key, rate limited, and rotatable if it gets abused.
+const BUNDLED_API_FOOTBALL_KEY: &str = "3d0715a986574ee8ba7526c264d47cd5";
+
 fn api_football_key() -> Result<String, String> {
     if let Some(k) = API_KEY.lock().unwrap().clone() {
         return Ok(k);
     }
-    std::env::var("API_FOOTBALL_KEY").map_err(|_| {
-        "[goal-digger] API_FOOTBALL_KEY not set. Live fixtures/injuries unavailable; \
-         strength-only simulation still works."
-            .to_string()
-    })
+    if let Ok(k) = std::env::var("API_FOOTBALL_KEY") {
+        return Ok(k);
+    }
+    Ok(BUNDLED_API_FOOTBALL_KEY.to_string())
 }
 
 fn af_get(path: &str, query: &[(&str, String)]) -> Result<Value, String> {
