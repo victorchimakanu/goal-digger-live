@@ -1,6 +1,6 @@
 [app]
-name         = "goal-digger"
-display_name = "Goal Digger — World Cup Trading Brain"
+name         = "goal-digger-live"
+display_name = "Goal Digger — Live World Cup Brain"
 platform     = "community"
 git          = "https://github.com/victorchimakanu/goal-digger-agent"
 public       = true

@@ -52,7 +52,7 @@ const API_FOOTBALL_KEY: Secret = Secret::new(
 
 dyn_aomi_app!(
     app = tool::GoalDiggerApp,
-    name = "goal-digger",
+    name = "goal-digger-live",
     version = "0.1.0",
     preamble = PREAMBLE,
     tools = [
