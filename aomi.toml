@@ -2,6 +2,6 @@
 name         = "goal-digger-live"
 display_name = "Goal Digger — Live World Cup Brain"
 platform     = "community"
-git          = "https://github.com/victorchimakanu/goal-digger-agent"
+git          = "https://github.com/victorchimakanu/goal-digger-live"
 public       = true
 server_tags  = ["prod"]
